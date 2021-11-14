@@ -1,1 +1,1 @@
-- import_playbook: pebble_mine.yml
+- import_playbook: pebblemine.yml

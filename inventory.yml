@@ -1,6 +1,6 @@
 all:
   hosts:
-    pebble_mine:
+    pebblemine:
   vars:
     # common variables for all
     ansible_connection: local
