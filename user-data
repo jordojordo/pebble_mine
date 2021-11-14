@@ -8,15 +8,10 @@
 # https://cloudinit.readthedocs.io/
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: pebble
+hostname: pebble_mine
 
 # Enable password authentication with the SSH daemon
 ssh_pwauth: true
-
-# On first boot, use ssh-import-id to give the specific users SSH access to
-# the default user
-#ssh_import_id:
-#- gh:jordonleach
 
 # Import keys with the ssh-import-id utility
 users:
@@ -24,11 +19,11 @@ users:
     primary-group: users
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
-    passwd: {{ PASSWD }}
+    passwd: {{ PEBBLE_PASSWD }}
     groups: users,adm,dialout,audio,plugdev,netdev,video
     lock_passwd: true
     ssh-authorized-keys:
-      - {{ SSH_KEY }}
+      - {{ PEBBLE_SSH_KEY }}
 
 ## Update apt database and upgrade packages on first boot
 package_update: true
