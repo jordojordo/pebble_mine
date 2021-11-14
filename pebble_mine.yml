@@ -1,0 +1,6 @@
+- name: Initialize Pebble Mine
+  hosts: all
+  become: yes
+  serial: 1
+  roles:
+    - pebble_mine
