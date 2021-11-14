@@ -38,14 +38,13 @@ package_upgrade: true
 packages:
   - avahi-daemon
   - ansible
-  - pastebinit
 #- [libpython2.7, 2.7.3-0ubuntu3.1]
 
 # Run arbitrary commands at rc.local like time
 runcmd:
   - "sudo systemctl restart avahi-daemon"
   - "sudo ansible-pull -U https://github.com/jordojordo/pebble_mine.git -i inventory.yml provision.yml > /var/log/ansible-provision.run 2>&1"
-  - [sh, -xc, "echo $(date) ': Pebble lives...'"]
+  - [sh, -xc, "echo $(date) ': Time to mine them pebbles...'"]
 
 powerstate:
   delay: "+5"
