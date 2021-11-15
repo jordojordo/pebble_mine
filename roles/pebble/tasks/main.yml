@@ -2,14 +2,14 @@
   include: "update.yml"
 
 - name: download installer rustup
-  ansible.builtin.get_url:
+  get_url:
     url: https://static.rust-lang.org/rustup.sh
     dest: "/root/rustup.sh"
     mode: "750"
     validate_certs: no
 
 - name: run installer rustup
-  ansible.builtin.command:
+  command:
     cmd: ./rustup.sh -y
     chdir: "/root"
     creates: "/usr/local/bin/cargo"
@@ -21,26 +21,26 @@
   apt:
     name: apt-transport-https
 
-- name: Add Yarn apt key
+- name: add yarn apt key
   apt_key:
     url: "https://dl.yarnpkg.com/debian/pubkey.gpg"
 
-- name: Add Yarn repository
+- name: add yarn repository
   apt_repository:
     repo: "deb https://dl.yarnpkg.com/debian/ stable main"
     filename: yarn
 
-- name: Install Yarn
+- name: install yarn
   apt:
     name: yarn
 
-# TODO: add config for restart
+## TODO: add config for restart
 # - name: Reboot immediately if there was a change
 #   shell: "sleep 5 && reboot"
 #   async: 1
 #   poll: 0
 
-# - name: Wait for the reboot to complete if there was a change
+# - name: wait for the reboot to complete if there was a change
 #   wait_for_connection:
 #     connect_timeout: 20
 #     sleep: 5
@@ -48,30 +48,30 @@
 #     timeout: 300
 
 # test this, may need to add license to radicle-bins/seeds/ui/package.json
-- name: Clone Radicle repo
+- name: clone radicle repo
   git:
     repo: https://github.com/radicle-dev/radicle-bins.git
     dest: "/home/ansible/repos/radicle-bins/"
     clone: yes
     update: yes
 
-- name: Build Radicle UI
+- name: build Radicle UI
   shell: "yarn && yarn build"
   args:
     chdir: "/home/ansible/repos/radicle-bins/seed/ui"
 
-- name: Create directory for seed data
+- name: create directory for seed data
   file:
     path: "/home/ansible/.radicle-seed"
     state: directory
 
-- name: Generate private key
+- name: generate private key
   shell: "cargo run -p radicle-keyutil -- --filename /home/ansible/.radicle-seed/secret.key"
   become: yes
   args:
     chdir: "/home/ansible/repos/radicle-bins"
 
-- name: change permissions
+- name: change secret key permissions
   file:
     path: "/home/ansible/.radicle-seed/secret.key"
     state: file
@@ -89,3 +89,5 @@
     --assets-path seed/ui/public \
     < /home/ansible/.radicle-seed/secret.key
   become: yes
+  args:
+    chdir: "/home/ansible/repos/radicle-bins"

@@ -15,9 +15,13 @@
     update_cache: yes
   become: yes
 
-- name: install build-essentials for cargo
+- name: pause a few seconds for other services to start
+  pause:
+    seconds: 5
+
+- name: install build-essential for cargo
   apt:
-    name: build-essentials
+    name: build-essential
 
 - name: install cmake
   apt:
