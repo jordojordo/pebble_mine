@@ -1,32 +1,29 @@
-- name: Change time zone
-  timezone:
-    name: "{{time_zone}}"
+- name: update system
+  include: "update.yml"
 
-- name: Upgrade the OS (apt-get dist-upgrade)
-  apt:
-    upgrade: dist
-    update_cache: yes
-  become: yes
+- name: download installer rustup
+  ansible.builtin.get_url:
+    url: https://static.rust-lang.org/rustup.sh
+    dest: "/root/rustup.sh"
+    mode: "750"
+    validate_certs: no
 
-- name: Update all packages to latest versions
-  apt:
-    name: "*"
-    state: latest
-    update_cache: yes
-  become: yes
+- name: run installer rustup
+  ansible.builtin.command:
+    cmd: ./rustup.sh -y
+    chdir: "/root"
+    creates: "/usr/local/bin/cargo"
+  environment:
+    CARGO_HOME: "/usr/local"
+    TMPDIR: "/root"
 
-- name: Install RustUp
-  shell: |
-    set -o pipefail
-    curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-- name: Ensure apt-transport-https is installed
+- name: ensure apt-transport-https is installed
   apt:
     name: apt-transport-https
 
 - name: Add Yarn apt key
   apt_key:
-    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    url: "https://dl.yarnpkg.com/debian/pubkey.gpg"
 
 - name: Add Yarn repository
   apt_repository:
@@ -36,3 +33,59 @@
 - name: Install Yarn
   apt:
     name: yarn
+
+# TODO: add config for restart
+# - name: Reboot immediately if there was a change
+#   shell: "sleep 5 && reboot"
+#   async: 1
+#   poll: 0
+
+# - name: Wait for the reboot to complete if there was a change
+#   wait_for_connection:
+#     connect_timeout: 20
+#     sleep: 5
+#     delay: 5
+#     timeout: 300
+
+# test this, may need to add license to radicle-bins/seeds/ui/package.json
+- name: Clone Radicle repo
+  git:
+    repo: https://github.com/radicle-dev/radicle-bins.git
+    dest: "/home/ansible/repos/radicle-bins/"
+    clone: yes
+    update: yes
+
+- name: Build Radicle UI
+  shell: "yarn && yarn build"
+  args:
+    chdir: "/home/ansible/repos/radicle-bins/seed/ui"
+
+- name: Create directory for seed data
+  file:
+    path: "/home/ansible/.radicle-seed"
+    state: directory
+
+- name: Generate private key
+  shell: "cargo run -p radicle-keyutil -- --filename /home/ansible/.radicle-seed/secret.key"
+  become: yes
+  args:
+    chdir: "/home/ansible/repos/radicle-bins"
+
+- name: change permissions
+  file:
+    path: "/home/ansible/.radicle-seed/secret.key"
+    state: file
+    owner: root
+    group: root
+    mode: "0775"
+
+- name: run seed node
+  shell: |
+    cargo run -p radicle-seed-node --release -- \
+    --root /home/ansible/.radicle-seed \
+    --peer-listen 0.0.0.0:12345 \
+    --http-listen 0.0.0.0:80 \
+    --name "pebble" \
+    --assets-path seed/ui/public \
+    < /home/ansible/.radicle-seed/secret.key
+  become: yes
