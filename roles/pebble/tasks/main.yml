@@ -55,7 +55,7 @@
     clone: yes
     update: yes
 
-- name: build Radicle UI
+- name: build radicle ui
   shell: "yarn && yarn build"
   args:
     chdir: "/home/ansible/repos/radicle-bins/seed/ui"
@@ -85,7 +85,8 @@
     --root /home/ansible/.radicle-seed \
     --peer-listen 0.0.0.0:12345 \
     --http-listen 0.0.0.0:80 \
-    --name "pebble" \
+    --name "{{hostname}}" \
+    --public-addr "{{public_addr}}" \
     --assets-path seed/ui/public \
     < /home/ansible/.radicle-seed/secret.key
   become: yes
