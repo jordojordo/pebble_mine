@@ -46,7 +46,7 @@ You can find the main config for the seed in `roles/pebble/tasks/main.yml`.
 
 ### Steps
 
-First you'll need a new instance of Ubuntu installed on an SD for the Raspiberry Pi, I tested this with `v20.04.3 LTS`. You can use any way you like to install it, I used (RPI Imager)[https://www.raspberrypi.com/software/].
+First you'll need a new instance of Ubuntu installed on an SD for the Raspiberry Pi, I tested this with `v20.04.3 LTS`. You can use any way you like to install it, I used [RPI Imager](https://www.raspberrypi.com/software/).
 
 Once the image has been copied, mount the drive and copy the `user-data` config file from the repo into the boot partition of SD card.
 
