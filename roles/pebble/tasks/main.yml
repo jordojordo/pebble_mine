@@ -51,29 +51,29 @@
 - name: clone radicle repo
   git:
     repo: https://github.com/radicle-dev/radicle-bins.git
-    dest: "/home/ansible/repos/radicle-bins/"
+    dest: "/home/{{ pi_username }}/repos/radicle-bins/"
     clone: yes
     update: yes
 
 - name: build radicle ui
   shell: "yarn && yarn build"
   args:
-    chdir: "/home/ansible/repos/radicle-bins/seed/ui"
+    chdir: "/home/{{ pi_username }}/repos/radicle-bins/seed/ui"
 
 - name: create directory for seed data
   file:
-    path: "/home/ansible/.radicle-seed"
+    path: "/home/{{ pi_username }}/{{ radicle_seed }}"
     state: directory
 
 - name: generate private key
-  shell: "cargo run -p radicle-keyutil -- --filename /home/ansible/.radicle-seed/secret.key"
+  shell: "cargo run -p radicle-keyutil -- --filename /home/{{ pi_username }}/{{radicle_seed}}/secret.key"
   become: yes
   args:
-    chdir: "/home/ansible/repos/radicle-bins"
+    chdir: "/home/{{ pi_username }}/repos/radicle-bins"
 
 - name: change secret key permissions
   file:
-    path: "/home/ansible/.radicle-seed/secret.key"
+    path: "/home/{{ pi_username }}/{{ radicle_seed }}/secret.key"
     state: file
     owner: root
     group: root
@@ -82,13 +82,13 @@
 - name: run seed node
   shell: |
     cargo run -p radicle-seed-node --release -- \
-    --root /home/ansible/.radicle-seed \
+    --root /home/{{ pi_username }}/{{ radicle_seed }} \
     --peer-listen 0.0.0.0:12345 \
     --http-listen 0.0.0.0:80 \
-    --name "{{hostname}}" \
-    --public-addr "{{public_addr}}" \
+    --name "{{ radicle_hostname }}" \
+    --public-addr "{{ public_addr }}:12345" \
     --assets-path seed/ui/public \
-    < /home/ansible/.radicle-seed/secret.key
+    < /home/{{ pi_username }}/{{ radicle_seed }}/secret.key
   become: yes
   args:
-    chdir: "/home/ansible/repos/radicle-bins"
+    chdir: "/home/{{ pi_username }}/repos/radicle-bins"

@@ -8,7 +8,7 @@
 # https://cloudinit.readthedocs.io/
 
 ## Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: "{{HOSTNAME}}"
+hostname: "<HOSTNAME>"
 
 ## Enable password authentication with the SSH daemon
 ssh_pwauth: true
@@ -19,11 +19,11 @@ users:
     primary-group: users
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
-    passwd: "{{PEBBLE_PASSWD}}"
+    passwd: "<PEBBLE_PASSWD>"
     groups: users,adm,dialout,audio,plugdev,netdev,video
     lock_passwd: true
     ssh-authorized-keys:
-      - "{{PEBBLE_SSH_KEY}}"
+      - "<PEBBLE_SSH_KEY>"
 
 ## Update apt database and upgrade packages on first boot
 package_update: true
@@ -37,7 +37,7 @@ packages:
 ## Run arbitrary commands at rc.local like time
 runcmd:
   - "sudo systemctl restart avahi-daemon"
-  - "sudo ansible-pull -U {{PEBBLE_REPO}} -i inventory.yml provision.yml > /var/log/ansible-provision.run 2>&1"
+  - "sudo ansible-pull -U <PEBBLE_REPO> -i inventory.yml provision.yml > /var/log/ansible-provision.run 2>&1"
   - [sh, -xc, "echo $(date) ': Time to mine them pebbles...'"]
 
 powerstate:

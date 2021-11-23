@@ -2,14 +2,13 @@ all:
   hosts:
     pebble:
   vars:
-    # common variables for all
     ansible_connection: local
     ansible_become: yes
     ansible_become_method: sudo
-    # dns_server can contain multiple values, separated by comma
-    dns_server: "192.168.1.1"
-    time_zone: America/New_York
 
-    # Host variables
-    hostname: pebble
-    public_addr: https://big-website.com
+    # host variabels
+    time_zone: America/New_York
+    pi_username: ansible
+    radicle_hostname: pebble
+    public_addr: https://oh-pebble-my-pebble.com
+    radicle_seed: '--root /home/{{ username }}/.radicle-seed'
