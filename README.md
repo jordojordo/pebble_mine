@@ -60,7 +60,7 @@ After the seed node is finished installing you can access it at `<SEED_ID>>@<PUB
 
 #### Note
 
-This thing isn't totally finished... some things left to do:
+This isn't totally finished... some things left to do:
 - fix the reboot task to continue with the playbook after reboot
 - add optional step for adding an LVM for the node
 - add output log for the node
